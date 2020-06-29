@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Input } from 'semantic-ui-react'
+import { Button, Header, Input, Segment } from 'semantic-ui-react'
 import CsvUploadService from "./CsvUploadService";
 
 class CsvUpload extends Component {
@@ -24,7 +24,10 @@ class CsvUpload extends Component {
 
     render() {
         return (
-            <Input type="file" accept=".csv" ref={this.myRef} action={<Button id="do-upload-csv" onClick={this.handleClick}>Upload</Button>}/>
+            <Segment>
+                <Header as='h2'>Upload CSV File</Header>
+                <Input type="file" accept=".csv" ref={this.myRef} action={<Button id="do-upload-csv" onClick={this.handleClick}>Upload</Button>}/>
+            </Segment>
         );
     }
 }
