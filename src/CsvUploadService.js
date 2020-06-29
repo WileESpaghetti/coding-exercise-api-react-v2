@@ -1,7 +1,8 @@
 import Papaparse from 'papaparse';
 import PeopleService from "./PeopleService";
+import GroupsService from "./GroupsService";
 
-const enabledServices = [PeopleService];
+const enabledServices = [PeopleService, GroupsService];
 
 /**
  * @see https://www.papaparse.com/docs#config
