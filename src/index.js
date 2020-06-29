@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { Container, Header } from "semantic-ui-react";
 
 import ResultsList from "./ResultsList";
+import CsvUpload from "./CsvUpload";
 
 const App = ({ children }) => (
   <Container style={{ margin: 20 }}>
@@ -19,6 +20,7 @@ document.head.appendChild(styleLink);
 
 ReactDOM.render(
   <App>
+      <CsvUpload />
     <ResultsList />
   </App>,
   document.getElementById("root")
