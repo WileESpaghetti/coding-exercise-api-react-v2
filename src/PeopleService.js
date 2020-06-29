@@ -8,7 +8,7 @@ export default {
 };
 
 function canProcessCsv(fields) {
-    return _.isEqual(fields, ['id', 'first_name', 'last_name', 'email_address', 'status']);
+    return _.isEqual(fields, ['id', 'first_name', 'last_name', 'email_address', 'status', 'group_name']);
 }
 
 function process(data) {
