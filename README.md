@@ -76,6 +76,138 @@ The data will be displayed in a sortable table.
 
 You will need to determine the type of data in the CSV file based on the headers in the first row. Your program will output a list of Groups, and for each Group, a list of active People in that Group.
 
+### Validating the changes
+#### Running
+You will need an empty MySQL database to run the example. I used docker to spin up
+a server (I'm using version 5.7 due to the root account not working out of the box in
+newer container versions)
+
+```
+docker run --name breezedb -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=laravel -p3306:3306  mysql:5.7
+```
+
+I also had to install the php-sqlite3 module to get the tests to run.
+The installation of `yarn` was missing from my system too, so I had to use `npm`
+
+```
+npm install -g yarn
+```
+
+After that I could follow the set up instructions above without any issues.
+1. copy `.env.example` to .env and add database information
+2. run `composer install`
+3. run `yarn install`
+4. start API using `php artisan serve`
+5. start react with `yarn start`
+
+#### Changes Implemented
+Added the API endpoint for `api/groups` and supports all the normal CRUD operations.
+
+The `group_name` column has been added to the `people` table. This can be any string
+since it is not checked with the `groups`. In production this should be a foreign key.
+This column is also displayed with the other `person` data in the React application.
+
+Automated testing has been added for the People and Groups APIs. They can be run with
+```
+php artisan test
+```
+
+`curl` can be used to manually check API endpoints. The available routes are:
+
+```
+# php artisan route:list
+
++--------+-----------+--------------------------+----------------+-----------------------------------------------+------------+
+| Domain | Method    | URI                      | Name           | Action                                        | Middleware |
++--------+-----------+--------------------------+----------------+-----------------------------------------------+------------+
+|        | GET|HEAD  | api/groups               | groups.index   | App\Http\Controllers\GroupsController@index   | api        |
+|        | POST      | api/groups               | groups.store   | App\Http\Controllers\GroupsController@store   | api        |
+|        | GET|HEAD  | api/groups/create        | groups.create  | App\Http\Controllers\GroupsController@create  | api        |
+|        | GET|HEAD  | api/groups/{group}       | groups.show    | App\Http\Controllers\GroupsController@show    | api        |
+|        | PUT|PATCH | api/groups/{group}       | groups.update  | App\Http\Controllers\GroupsController@update  | api        |
+|        | DELETE    | api/groups/{group}       | groups.destroy | App\Http\Controllers\GroupsController@destroy | api        |
+|        | GET|HEAD  | api/groups/{group}/edit  | groups.edit    | App\Http\Controllers\GroupsController@edit    | api        |
+|        | GET|HEAD  | api/people               | people.index   | App\Http\Controllers\PeopleController@index   | api        |
+|        | POST      | api/people               | people.store   | App\Http\Controllers\PeopleController@store   | api        |
+|        | GET|HEAD  | api/people/create        | people.create  | App\Http\Controllers\PeopleController@create  | api        |
+|        | GET|HEAD  | api/people/{person}      | people.show    | App\Http\Controllers\PeopleController@show    | api        |
+|        | PUT|PATCH | api/people/{person}      | people.update  | App\Http\Controllers\PeopleController@update  | api        |
+|        | DELETE    | api/people/{person}      | people.destroy | App\Http\Controllers\PeopleController@destroy | api        |
+|        | GET|HEAD  | api/people/{person}/edit | people.edit    | App\Http\Controllers\PeopleController@edit    | api        |
++--------+-----------+--------------------------+----------------+-----------------------------------------------+------------+
+```
+
+The React application now has a place at the top to upload CSV files. The type of
+resource is automatically detected. If the CSV file is not a recognized resource
+then nothing happens when you click the upload button (see the tasks remaining section)
+
+There is some console logs for when the upload finishes, but nothing displays on the screen.
+You must also refresh the page to view the data changes
+
+The CSV files do not depend on each other so you can upload them in any order.
+(benefit of using a string for the `person.group_name`. In production, I would
+create any missing groups or default missing groups to an empty string)
+
+Sample CSV files can be found in `tests/sample_data`.
+
+
+#### CSV Format
+People
+```
+id,first_name,last_name,email_address,status,group_name
+1,"Alex","Ortiz-Rosado","alex@breezechms.com",active,"Bible Study"
+2,"Jon","VerLee","jon@breezechms.com","archived","Bible Study"
+3,"Fred","Flintstone","fredflintstone@example.com","active","Bible Study"
+4,"Marie","Bourne","mbourne@example.com","active","Vacation"
+5,"Wilma","Flintstone","wilmaflinstone@example.com","active","Elders"
+```
+
+Groups
+```
+id,group_name
+1,Volunteers
+2,Elders
+3,"Bible Study"
+```
+
+#### Known Issues
+* **columns are not sortable. ...It's just a matter of adding the right `sortable` state as given in
+ https://react.semantic-ui.com/collections/table/#variations-sortable**
+* `id` is required, but does not quite work as expected. It is an autoincrementing
+column so new ID's may not match if you skip numbers or do not have the IDs in a sorted order
+* `jest` tests for ResultsList is broken due to updates. Should just need to update the expected
+data with the new JSX changes
+* have not checked for how large a CSV can be processed
+* uploading multiple files without refreshing didn't work during testing
+* The PapaParse JavaScript library can be tweaked to be more friendly, but is kind of strict
+* Some console errors due to 204 No Content responses from the API being handled improperly
+using the defaults. I have noticed issues with the following:
+    * Columns should not have spaces between them. (Bad: `id, group_name`, Good: `id,group_name` )
+    * PapaParse doesn't allow you set multiple quote characters, so I set it to use `"`
+    
+#### Tasks Remaining
+* UI feedback
+    * Add dimmer to show files are uploading and prevent multiple uploads accidently
+    * add upload progress (PapaParse lets you have a callback for each row / chain state updates to the fetch promises)
+    * notify user when upload finishes
+    * show results of the upload (created, updated, errors)
+    * add link in upload results to show error details
+    * automatically refresh tables
+    * allow user to download sample files
+    * notify user if no file selected or bad file selected
+    * breeze demo upload uses popup for uploads, would style to match production conventions
+* better error handling
+* abstract `PeopleService` and `GroupService` into a factory. All that really changes is the URL,
+and the allowed fields
+* verify CSRF or other XSS protection beyond React's defaults are needed
+* If performance became an issue then the CSV parsing and API requests could be done in batches
+with some modifications to the API POST/PUT endpoints.
+* Update JS to match coding standards (current company does not use ES6+ so I'm a bit rusty)
+* Add missing code documentation
+
+
+
+
 ### Testing
 
 We love TDD! So we’d love to see tests for the API and ReactJS application. Write automated tests to verify your results and account for gotchas (handling different column orders, invalid id's in the People CSV file, etc..). Classify your tests as either unit, integration, ui, or acceptance, but it is not required to use every type.
