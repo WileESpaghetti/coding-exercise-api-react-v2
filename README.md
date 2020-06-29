@@ -97,6 +97,7 @@ After that I could follow the set up instructions above without any issues.
 1. copy `.env.example` to .env and add database information
 2. run `composer install`
 3. run `yarn install`
+4. run `php artisan key:generate && php artisan migrate`
 4. start API using `php artisan serve`
 5. start react with `yarn start`
 
