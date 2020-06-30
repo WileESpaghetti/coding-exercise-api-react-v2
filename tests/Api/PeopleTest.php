@@ -17,7 +17,8 @@ class PeopleControllerTest extends TestCase
             'first_name' => 'Sally',
             'last_name' => 'Ride',
             'email_address' => 'sallyride@nasa.gov',
-            'status' => 'archived'
+            'status' => 'archived',
+            'group_name' => 'Example Group',
         ];
         $response = $this->json('POST', '/api/people', $expected);
         $response
@@ -39,6 +40,7 @@ class PeopleControllerTest extends TestCase
                     'last_name',
                     'email_address',
                     'status',
+                    'group_name',
                     'created_at',
                     'updated_at'
                 ]
