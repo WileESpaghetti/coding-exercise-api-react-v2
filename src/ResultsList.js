@@ -28,7 +28,7 @@ class ResultsList extends Component {
             return (
                 <div>
                     <Header as='h2'>People</Header>
-                <Table sortable celled padded>
+                <Table celled padded>
                   <Table.Header>
                     <Table.Row>
                       <Table.HeaderCell singleLine>First Name</Table.HeaderCell>
