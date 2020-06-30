@@ -10,6 +10,7 @@ class CsvUpload extends Component {
         this.getFileInputNode = this.getFileInputNode.bind(this);
         this.state = {};
     }
+
     getFileInputNode() {
         return this.myRef.current.inputRef.current;
     }
@@ -18,7 +19,7 @@ class CsvUpload extends Component {
         let files = this.getFileInputNode().files;
 
         if (files[0]) {
-            CsvUploadService.upload(files[0]);
+            new CsvUploadService().upload(files[0]);
         }
     }
 

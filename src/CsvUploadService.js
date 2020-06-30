@@ -1,54 +1,61 @@
+import _ from 'lodash';
 import Papaparse from 'papaparse';
-import PeopleService from "./PeopleService";
-import GroupsService from "./GroupsService";
+import { GroupsService, PeopleService } from "./Services";
 
 const enabledServices = [PeopleService, GroupsService];
 
-/**
- * @see https://www.papaparse.com/docs#config
- */
-var defaults = {
-    complete: onParseComplete,
-    dynamicTyping: true,
-    error: onFileReaderError,
-    header: true,
-    quoteChar: '"',
-    skipEmptyLines: 'greedy',
-    worker: true,
-}
-
-export default {
-    upload: upload,
-};
-
-function upload(file, config) {
-    if (!config) {
-        config = defaults;
+class CsvUploadService {
+    #enabledServices = [PeopleService, GroupsService];
+    #defaults = {
+        dynamicTyping: true,
+        header: true,
+        quoteChar: '"',
+        skipEmptyLines: 'greedy',
+        worker: true,
     }
 
-    Papaparse.parse(file, config)
-}
+    /**
+     * @see https://www.papaparse.com/docs#config
+     */
+    constructor(config) {
+        config = config || {};
+        this.config = _.assign(this.#defaults, config);
+    }
 
-function getCsvService(fields) {
-    for (let i = 0; i < enabledServices.length; i++) {
-        if (enabledServices[i].canProcessCsv(fields)) {
-            console.log(enabledServices[i]);
-            return enabledServices[i];
+    upload(file) {
+        return new Promise((resolve, reject) => {
+            console.warn('this.config: %o', this.config)
+            Papaparse.parse(file, _.assign(this.config, {error: reject, complete: resolve}))
+        }).then(this.onParseComplete.bind(this))
+          .catch(this.onFileReaderError)
+          .then((results) => console.warn(results));
+    }
+
+    getCsvService(fields) {
+        for (let i = 0; i < enabledServices.length; i++) {
+            if (enabledServices[i].canProcessCsv(fields)) {
+                console.log(enabledServices[i]);
+                return enabledServices[i];
+            }
         }
-    }
-    return null;
-}
-
-function onParseComplete(results, file) {
-    let fields = results.meta.fields;
-    let service = getCsvService(fields);
-    if (!service) {
-        return; // TODO handle unknown CSV format
+        return null;
     }
 
-    service.process(results.data);
+    onParseComplete(results) {
+        console.log('CSV read complete');
+        let fields = results.meta.fields;
+        let service = this.getCsvService(fields);
+        if (!service) {
+            return Promise.reject('unknown CSV format');
+        }
+
+        return service.process(results.data);
+    }
+
+    onFileReaderError(error, file) {
+        console.error('file error in %s: %s', file, error);
+        return Promise.reject(error);
+    }
 }
 
-function onFileReaderError(error, file) {
-    console.error('file error in %s: %s', file, error);
-}
+export default CsvUploadService;
