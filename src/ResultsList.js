@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import React, { Component } from 'react'
 import {Divider, Header, Segment, Table} from 'semantic-ui-react'
+import PeopleTable from './PeopleTable'
 
 class ResultsList extends Component {
     constructor(props) {
@@ -28,35 +29,7 @@ class ResultsList extends Component {
             return (
                 <div>
                     <Header as='h2'>People</Header>
-                <Table celled padded>
-                  <Table.Header>
-                    <Table.Row>
-                      <Table.HeaderCell singleLine>First Name</Table.HeaderCell>
-                      <Table.HeaderCell>Last Name</Table.HeaderCell>
-                      <Table.HeaderCell>Email</Table.HeaderCell>
-                      <Table.HeaderCell>Group</Table.HeaderCell>
-                        <Table.HeaderCell>Status</Table.HeaderCell>
-                    </Table.Row>
-                  </Table.Header>
-
-                  <Table.Body>
-
-                  {
-                      data.map((person, index) => {
-                          return (
-                              <Table.Row key={index}>
-                                  <Table.Cell singleLine>{ person.first_name }</Table.Cell>
-                                  <Table.Cell singleLine>{ person.last_name }</Table.Cell>
-                                  <Table.Cell singleLine>{ person.email_address }</Table.Cell>
-                                  <Table.Cell singleLine>{ person.group_name }</Table.Cell>
-                                  <Table.Cell singleLine>{ person.status }</Table.Cell>
-                              </Table.Row>
-                          );
-                        })
-                  }
-
-                  </Table.Body>
-                </Table>
+                    <PeopleTable data={data}/>
                 <Divider/>
                 <Header as='h2'>Groups</Header>
                 {
