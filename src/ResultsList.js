@@ -1,6 +1,5 @@
-import _ from 'lodash';
 import React, { Component } from 'react'
-import {Divider, Header, Segment, Table} from 'semantic-ui-react'
+import {Divider, Header, Segment} from 'semantic-ui-react'
 import PeopleTable from './PeopleTable'
 
 class ResultsList extends Component {
@@ -35,33 +34,9 @@ class ResultsList extends Component {
                 {
                     group_data.map((group, index) => {
                         return (
-                            <Segment>
+                            <Segment key={group.group_name}>
                                <Header as='h3'>{group.group_name}</Header>
-                            <Table celled padded>
-                                <Table.Header>
-                                    <Table.Row>
-                                        <Table.HeaderCell singleLine>First Name</Table.HeaderCell>
-                                        <Table.HeaderCell>Last Name</Table.HeaderCell>
-                                        <Table.HeaderCell>Email</Table.HeaderCell>
-                                        <Table.HeaderCell>Status</Table.HeaderCell>
-                                    </Table.Row>
-                                </Table.Header>
-
-                                <Table.Body>
-                                    {
-                                        _.filter(data, {status: 'active', group_name: group.group_name}).map((person, index) => {
-                                            return (
-                                                <Table.Row key={index}>
-                                                    <Table.Cell singleLine>{ person.first_name }</Table.Cell>
-                                                    <Table.Cell singleLine>{ person.last_name }</Table.Cell>
-                                                    <Table.Cell singleLine>{ person.email_address }</Table.Cell>
-                                                    <Table.Cell singleLine>{ person.status }</Table.Cell>
-                                                </Table.Row>
-                                            );
-                                        })
-                                    }
-                                </Table.Body>
-                            </Table>
+                                <PeopleTable data={data} filter={{status: 'active', group_name: group.group_name}} />
                             </Segment>
                         );
                     })

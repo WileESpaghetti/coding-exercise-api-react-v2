@@ -76,7 +76,7 @@ class PeopleTable extends Component {
                     <Table.Body>
 
                         {
-                            data.map((person, index) => {
+                            _.filter(data, this.props.filter).map((person, index) => {
                                 return (
                                     <Table.Row key={`${person.email}-${index}`}>
                                         <Table.Cell singleLine>{ person.first_name }</Table.Cell>
