@@ -1,0 +1,6 @@
+id,first_name,last_name,email_address,status,group_name
+1,"Alex","Ortiz-Rosado","alex@breezechms.com",active,"Bible Study"
+2,"Jon","VerLee","jon@breezechms.com","archived","Bible Study"
+3,"Fred","Flintstone","fredflintstone@example.com","active","Bible Study"
+4,"Marie","Bourne","mbourne@example.com","active","Vacation"
+5,"Wilma","Flintstone","wilmaflinstone@example.com","active","Misc"
